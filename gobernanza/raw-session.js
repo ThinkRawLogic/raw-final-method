@@ -1,0 +1,66 @@
+#!/usr/bin/env node
+/**
+ * raw-session.js — EL REFLEJO DE SESIÓN (The Raw Method · Nivel 1)
+ * ================================================================
+ * Hook SessionStart. En cada sesión nueva (o resume/clear/compact), si el
+ * proyecto usa The Raw Method, inyecta el reflejo del método como contexto —
+ * para que la IA NO pueda "olvidar" que opera bajo él. Fuera de un proyecto
+ * Raw Method, calla (no ensucia otras sesiones).
+ *
+ * Contrato SessionStart (Claude Code nativo): lo que se escribe a stdout se
+ * agrega al contexto de la sesión. Salida cruda, sin JSON.
+ */
+
+'use strict';
+const fs = require('fs');
+const path = require('path');
+
+function isMethodProject(dir) {
+  const marcadores = [
+    path.join(dir, '.the-raw-method'),
+    path.join(dir, 'docs', '_cobertura'),
+    path.join(dir, '_cobertura'),
+    path.join(dir, 'candados', 'conformance.test.ts'),
+    path.join(dir, 'INVARIABLES.md'),
+  ];
+  return marcadores.some((p) => { try { return fs.existsSync(p); } catch (_) { return false; } });
+}
+
+const REFLEJO = `
+━━━ THE RAW METHOD — ACTIVO EN ESTE PROYECTO ━━━
+Estás operando bajo The Raw Method. Esto NO es opcional, y un bloque NO se declara cerrado solo.
+
+La unidad de trabajo es el BLOQUE (un objetivo claro). Cerrar un bloque dispara la ceremonia,
+solo sobre los pilares que el router prendió:
+  1. AUDITAR con los tres equipos:
+       🔴 Red — ¿está roto?  (lo corre un agente fresco, distinto del que construyó; refuta por
+          defecto; cada hallazgo pasa por las 3 lentes y sobrevive si 2 de 3 no lo refutan)
+       ⚪ White — ¿logramos el objetivo?  (resultado contra la intención fijada ANTES de construir)
+       🔵 Blue — ¿lo vigilamos?  (monitoreo/alertas, si va a producción)
+  2. RESOLVER la ficha de cobertura: cada clave [x] con nota de CÓMO se cumplió, o [x] N/A — <por qué>.
+       Una clave muda (sin nota) NO cuenta como cerrada.
+  3. DOCUMENTAR en el MISMO cambio: ley, backlog, bitácora y todo doc que el cambio dejó desfasado.
+  4. REPORTE honesto 50/50: Fortalezas + Debilidades + Qué NO se alcanzó a probar. Sin esto = incompleto.
+  5. El OK lo da el DUEÑO, no vos. Lo irreversible (FONDO: publicar, gastar, borrar, ir a producción)
+     SIEMPRE frena y espera al dueño. Ante la duda entre FORMA y FONDO, es FONDO.
+
+Motor: de cada problema, una regla que mata la CLASE entera — no solo un parche.
+Enforcement duro: el hook raw-gate RECHAZA \`git commit\` si una ficha marcada como cerrada deja una
+clave sin resolver. No se evade con --no-verify. Lo que se pueda automatizar, se automatiza; lo que
+no (juicio), se declara — nunca se disfraza de candado.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`;
+
+function main() {
+  let dir = process.cwd();
+  try {
+    const raw = fs.readFileSync(0, "utf8").replace(/^\uFEFF/, "").trim();
+    if (raw) { const d = JSON.parse(raw); if (d && d.cwd) dir = d.cwd; }
+  } catch (_) {}
+  if (process.env.CLAUDE_PROJECT_DIR) dir = process.env.CLAUDE_PROJECT_DIR;
+
+  if (!isMethodProject(dir)) return; // silencio fuera de un proyecto Raw Method
+  try { process.stdout.write(REFLEJO); } catch (_) {}
+}
+
+try { main(); } catch (_) { /* nunca romper el arranque de sesión */ }

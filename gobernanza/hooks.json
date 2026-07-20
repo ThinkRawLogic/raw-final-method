@@ -1,0 +1,33 @@
+{
+  "//": "The Raw Method · Nivel 1 — gobernanza a nivel host. Mergéalo en ~/.claude/settings.json (global) o en <proyecto>/.claude/settings.json (por proyecto). Reemplazá __GOBERNANZA__ por la ruta absoluta de esta carpeta.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"__GOBERNANZA__/raw-session.js\"; exit 0",
+            "commandWindows": "if (Get-Command node -ErrorAction SilentlyContinue) { node \"__GOBERNANZA__\\raw-session.js\" }",
+            "timeout": 5,
+            "statusMessage": "The Raw Method: cargando el reflejo del método..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"__GOBERNANZA__/raw-gate.js\"",
+            "commandWindows": "node \"__GOBERNANZA__\\raw-gate.js\"; exit $LASTEXITCODE",
+            "timeout": 10,
+            "statusMessage": "The Raw Method: revisando la ficha de cobertura..."
+          }
+        ]
+      }
+    ]
+  }
+}
