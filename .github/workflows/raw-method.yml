@@ -1,0 +1,22 @@
+name: The Raw Method — candado de cobertura
+
+# El candado de cobertura a nivel SERVIDOR (Nivel 2). Corre en cada push y PR, así
+# cubre lo que el hook de la IA no ve: el commit humano, la edición por la web, y el
+# `git commit --no-verify` (imposible de frenar en local — acá corre después, sobre
+# lo ya guardado). Con branch protection exigiendo este check como obligatorio, un
+# bloque cerrado con una clave sin resolver NO se puede mergear a main.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  cobertura:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: raw-check (candado de cobertura)
+        run: node gobernanza/raw-check.js
