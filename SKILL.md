@@ -29,6 +29,8 @@ Cada regla del método declara **cómo se hace cumplir**. Hay tres niveles, y la
 
 **La meta permanente es vaciar la capa 📖.** Cuando un método de calidad vive solo en la memoria de la gente, no se aplica — se olvida. Por eso The Raw Method convierte reglas en candados siempre que puede.
 
+**Dónde viven los candados 🤖 — en dos planos.** En el **código** (`candados/`, el arnés que frena el `git commit`) y en el **proceso** de la propia IA (`gobernanza/`, hooks del harness — el "Nivel 1"). La gobernanza cierra un hueco que el arnés no toca: que la IA simplemente *no corra el método*. El reflejo del método se inyecta en cada sesión, y un cierre con la ficha sin resolver se rechaza a nivel del harness (no lo evade `--no-verify`). Detalle en `gobernanza/README.md`.
+
 **Aclaración clave cuando un candado necesita una herramienta externa.** Algunos candados 🤖 dependen de una herramienta que **cambia según el proyecto**: un verificador de licencias, o un *arnés de contract testing* (un banco de pruebas que avisa si le cambiaste la forma a un dato que otra pieza ya usa). Que un proyecto **todavía no la tenga** no lo deja afuera del método ni le impone nada — pero **tampoco es un pase libre**. La regla no baja a 📖; se sostiene con dientes:
 
 - **Espera en 👁, con firma independiente.** Hasta que la herramienta se conecte al proyecto (se *cablee*), un revisor **distinto de quien hizo el cambio** —un agente fresco o el propio dueño— revisa la regla a mano y **firma**. Auto-firmar tu propio cambio no cuenta: es la misma independencia que el método exige en el Red Team y las 3 lentes.
@@ -177,7 +179,7 @@ Regla dura: **lo que toca dinero lo cierra el modelo más capaz**, nunca uno má
 
 - [ ] Compila, pasa el linter (corrector de estilo automático) y el build (armado final del programa), **en verde** (sin errores).
 - [ ] Tiene un **test que reproduce el escenario** (y, si arregla un bug, un test de regresión que lo cazaría de nuevo).
-- [ ] Los **candados 🤖 pertinentes** pasan; lo que no se pudo automatizar quedó **revisado 👁 y registrado**.
+- [ ] Los **candados 🤖 pertinentes** pasan (el arnés vive en `candados/`; el enforce a nivel host, en `gobernanza/`); lo que no se pudo automatizar quedó **revisado 👁 y registrado**.
 - [ ] La **auditoría adversaria** de los ángulos tocados corrió, y sus hallazgos están cerrados o anotados.
 - [ ] Si es UI: **verificado en el navegador** (hay errores que el compilador no caza).
 - [ ] Los **documentos** quedaron al día en el mismo cambio.
@@ -210,7 +212,7 @@ Cada pilar tiene un nombre en llano + su término técnico, y trae *qué chequea
 
 ---
 
-## Índice de referencias
+## Índice: referencias, plantillas y kit operativo
 
 - `referencias/pilares.md` — los 16 ángulos con briefing + cómo atacarlo (auditoría adversaria).
 - `referencias/auditoria-adversaria.md` — cómo se corre el Red Team: postura, 3 lentes, **la criba**, flota, loop-hasta-secar, formato de reporte.
@@ -218,6 +220,9 @@ Cada pilar tiene un nombre en llano + su término técnico, y trae *qué chequea
 - `referencias/documentos-vivos.md` — el ecosistema de documentos y para qué sirve cada uno.
 - `referencias/candados-y-capas.md` — las 3 capas de enforcement y cómo se construye un candado.
 - `plantillas/` — plantillas VACÍAS para arrancar un proyecto nuevo (la ley, la ficha de cobertura, el arranque de sesión, la bitácora, el backlog y las decisiones autónomas). Un proyecto nuevo empieza vacío y las llena solo, a medida que aprende (el motor: de cada problema, una regla — ver `referencias/candados-y-capas.md`).
+- `comandos/cerrar-bloque.md` — el ritual de cierre paso a paso (las 3 auditorías → ficha resuelta → documentos al día → reporte honesto → OK del dueño). Sirve como slash-command o como checklist.
+- `candados/` — el arnés reusable que corre en el `git commit`: `conformance.test.ts` (candados genéricos), `candado-plantilla.ts` (el molde) y `pre-commit.sample` (el hook de git).
+- `gobernanza/` — el candado del PROCESO (Nivel 1): hooks a nivel del harness que hacen que seguir el método deje de ser opcional para la IA. `raw-session.js` inyecta el reflejo en cada sesión; `raw-gate.js` rechaza `git commit` si una ficha cerrada quedó sin resolver (no lo evade `--no-verify`). Ver `gobernanza/README.md`.
 
 ---
 
