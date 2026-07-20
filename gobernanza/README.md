@@ -1,4 +1,4 @@
-# gobernanza/ — el candado del PROCESO (Niveles 1 y 2)
+# gobernanza/ — el candado del PROCESO (Niveles 1, 2 y 3)
 
 > **Parte de The Raw Method.** Los `candados/` cierran clases de bug en el código. Esto cierra
 > el hueco de más arriba: **que la IA (o vos, un viernes cansado) simplemente no corra el método.**
@@ -42,6 +42,23 @@ Require status checks to pass.)
 
 ---
 
+## Nivel 3 — la honestidad, no solo la cobertura (candado 50/50)
+
+La cobertura verifica que se **revisaron** los ángulos. Pero `SKILL.md` (L99) promete además un candado
+para la **honestidad 50/50**: ningún cierre está completo sin su renglón **Fortalezas · Debilidades ·
+Qué NO se alcanzó a probar**. Ese candado no existía — ahora sí.
+
+La ficha (`plantillas/ficha-cobertura.md`) trae un **Reporte honesto** obligatorio con esas tres
+secciones. `raw-gate` y `raw-check` rechazan el cierre de una ficha si el reporte **falta** o si sus
+secciones quedaron **vacías** (el `___` sin llenar). Cierra la deuda que el propio método declaraba
+como candado pero no tenía.
+
+> Sigue siendo **forma reforzada**, no sustancia total: exigimos que la debilidad esté *escrita*, no
+> podemos verificar que sea *la* debilidad real. Registrar la corrida de un auditor independiente (que
+> el `(auditoría)` deje de ser autodeclarado) es el próximo paso.
+
+---
+
 ## Instalar
 
 Necesitás `node` en el PATH (Claude Code ya lo trae). Dos modos para los hooks:
@@ -80,8 +97,8 @@ Fiel a `§5` del método, no fingimos que esto encierra todo:
 - **Encierra la FORMA, no la SUSTANCIA.** El candado verifica que la ficha esté *resuelta*, no que
   la auditoría detrás de cada clave *haya ocurrido de verdad*. La IA sigue llenando su propia ficha;
   exigimos que no la deje muda, pero no le leemos la mente. Subir eso de "la IA dijo que auditó" a
-  "hay un pase independiente en el expediente" es **Nivel 3** (registrar la corrida de un agente
-  fresco), y sigue siendo 👁 con mejor rastro.
+  "hay un pase independiente en el expediente" es lo que FALTA del **Nivel 3**: registrar la corrida
+  de un agente auditor **independiente**, para que el (auditoría) deje de ser autodeclarado. Sigue siendo 👁, con mejor rastro.
 - **El CI cubre el servidor; el hook cubre a la IA; el `pre-commit` de `candados/` cubre tu commit
   local.** Los tres se complementan — ninguno solo alcanza. El CI es la red que atrapa lo que se
   escapó de las otras dos (incluido `--no-verify` local).

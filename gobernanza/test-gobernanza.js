@@ -11,6 +11,8 @@
  *     - raw-session inyecta el reflejo dentro del método, y calla fuera
  *   Nivel 2 (raw-check, CLI/CI):
  *     - ficha cerrada con clave muda  → exit 1  ·  resuelta → exit 0  ·  no-método → exit 0
+ *   Nivel 3 (candado de honestidad 50/50):
+ *     - ficha cerrada SIN reporte honesto, o con las secciones vacías → BLOQUEADO / exit 1
  *
  * Sin frameworks. `node test-gobernanza.js` → sale != 0 si algo falla.
  */
@@ -45,17 +47,29 @@ function marcarMetodo(dir) { fs.writeFileSync(path.join(dir, '.the-raw-method'),
 const CLAVES = ['spec-leída','orden','seguridad','experiencia','concurrencia','errores',
   'rastro','config','aguante','stack','dato','tests','auditoría','docs','OK'];
 
-function fichaResuelta(cerrada) {
+// El reporte honesto 50/50 (Nivel 3), lleno y vacío.
+const HONESTO = '\n\n## Reporte honesto (50/50)\n\n### Fortalezas\nquedó sólido el flujo X.\n' +
+  '\n### Debilidades / qué quedó corto\nfalta pulir Y.\n\n### Qué NO se alcanzó a probar\ncarga real.\n';
+const HONESTO_VACIO = '\n\n## Reporte honesto (50/50)\n\n### Fortalezas\n___\n' +
+  '\n### Debilidades\n___\n\n### Qué NO se alcanzó a probar\n___\n';
+
+function base(cerrada, lineas) {
   const fecha = cerrada ? '2026-07-20' : '___________';
-  const lineas = CLAVES.map((c) => `- [x] **(${c})** algo. → hecho tal cosa`);
   return `# Ficha\n\n**Bloque:** demo  **Fecha de cierre:** ${fecha}\n\n## Claves\n\n${lineas.join('\n')}\n`;
 }
+function fichaResuelta(cerrada) {
+  return base(cerrada, CLAVES.map((c) => `- [x] **(${c})** algo. → hecho tal cosa`)) + HONESTO;
+}
 function fichaConClaveMuda(cerrada) {
-  const fecha = cerrada ? '2026-07-20' : '___________';
   const lineas = CLAVES.map((c, i) =>
-    i === 2 ? `- [ ] **(${c})** algo. → ___`            // una clave sin resolver
-            : `- [x] **(${c})** algo. → hecho tal cosa`);
-  return `# Ficha\n\n**Bloque:** demo  **Fecha de cierre:** ${fecha}\n\n## Claves\n\n${lineas.join('\n')}\n`;
+    i === 2 ? `- [ ] **(${c})** algo. → ___` : `- [x] **(${c})** algo. → hecho tal cosa`);
+  return base(cerrada, lineas) + HONESTO; // honesto OK: aísla el fallo en la clave
+}
+function fichaSinHonestidad(cerrada) {
+  return base(cerrada, CLAVES.map((c) => `- [x] **(${c})** algo. → hecho tal cosa`)); // claves OK, sin reporte honesto
+}
+function fichaHonestidadVacia(cerrada) {
+  return base(cerrada, CLAVES.map((c) => `- [x] **(${c})** algo. → hecho tal cosa`)) + HONESTO_VACIO;
 }
 
 // runners
@@ -84,11 +98,11 @@ function correrCheck(dir) {
   check('gate:   · el mensaje nombra la clave sin resolver', /seguridad/.test(r.err));
 }
 
-// 2. ficha cerrada y resuelta → PERMITE
+// 2. ficha cerrada, resuelta y con reporte honesto → PERMITE
 {
   const dir = tmpProyecto('ok'); marcarMetodo(dir);
   ponerFicha(dir, 'bloque-1.md', fichaResuelta(true));
-  check('gate: ficha cerrada y resuelta → PERMITIDO (exit 0)', correrGate('git commit -m "x"', dir).code === 0);
+  check('gate: ficha resuelta + reporte honesto → PERMITIDO (exit 0)', correrGate('git commit -m "x"', dir).code === 0);
 }
 
 // 3. ficha con clave muda pero AÚN ABIERTA → PERMITE
@@ -152,17 +166,49 @@ function correrCheck(dir) {
   check('check:   · nombra la clave sin resolver', /seguridad/.test(r.out));
 }
 
-// 12. raw-check: ficha resuelta → OK (exit 0)
+// 12. raw-check: ficha resuelta + honesto → OK (exit 0)
 {
   const dir = tmpProyecto('check-ok'); marcarMetodo(dir);
   ponerFicha(dir, 'bloque-1.md', fichaResuelta(true));
-  check('check: ficha cerrada y resuelta → OK (exit 0)', correrCheck(dir).code === 0);
+  check('check: ficha resuelta + reporte honesto → OK (exit 0)', correrCheck(dir).code === 0);
 }
 
 // 13. raw-check: proyecto no-método → OK (exit 0)
 {
   const dir = tmpProyecto('check-nometodo');
   check('check: proyecto sin The Raw Method → OK (exit 0)', correrCheck(dir).code === 0);
+}
+
+// =================== Nivel 3 — candado de honestidad 50/50 ===================
+
+// 14. gate: ficha cerrada, claves OK, pero SIN reporte honesto → BLOQUEA
+{
+  const dir = tmpProyecto('sin-honesto'); marcarMetodo(dir);
+  ponerFicha(dir, 'bloque-1.md', fichaSinHonestidad(true));
+  const r = correrGate('git commit -m "x"', dir);
+  check('gate: ficha cerrada SIN reporte honesto → BLOQUEADO (exit 2)', r.code === 2);
+  check('gate:   · el mensaje pide las secciones honestas', /honesta|Fortalezas/.test(r.err));
+}
+
+// 15. gate: ficha cerrada con reporte honesto pero VACÍO (___ sin llenar) → BLOQUEA
+{
+  const dir = tmpProyecto('honesto-vacio'); marcarMetodo(dir);
+  ponerFicha(dir, 'bloque-1.md', fichaHonestidadVacia(true));
+  check('gate: ficha con reporte honesto VACÍO → BLOQUEADO (exit 2)', correrGate('git commit -m "x"', dir).code === 2);
+}
+
+// 16. gate: ficha ABIERTA sin reporte honesto → PERMITE (aún no se exige)
+{
+  const dir = tmpProyecto('abierta-sin-honesto'); marcarMetodo(dir);
+  ponerFicha(dir, 'bloque-1.md', fichaSinHonestidad(false));
+  check('gate: ficha abierta sin reporte honesto → PERMITIDO (solo se exige al cerrar)', correrGate('git commit -m "wip"', dir).code === 0);
+}
+
+// 17. raw-check: ficha cerrada sin reporte honesto → FALLA (exit 1)
+{
+  const dir = tmpProyecto('check-sin-honesto'); marcarMetodo(dir);
+  ponerFicha(dir, 'bloque-1.md', fichaSinHonestidad(true));
+  check('check: ficha cerrada SIN reporte honesto → FALLA (exit 1)', correrCheck(dir).code === 1);
 }
 
 process.stdout.write(`\n${fallos === 0 ? '✅ TODO EN VERDE' : `❌ ${fallos} fallo(s)`}\n`);

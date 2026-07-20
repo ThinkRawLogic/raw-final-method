@@ -39,3 +39,23 @@
 - [ ] **(auditoría)** La corrió un **revisor independiente** (agente fresco, distinto del que construyó): auditoría adversaria de los ángulos tocados, hallazgos pasados por las 3 lentes, cerrados o anotados. → ___
 - [ ] **(docs)** Ley, backlog, bitácora y todo doc desfasado quedaron al día en este mismo cambio. → ___
 - [ ] **(OK)** El dueño dio el visto bueno para cerrar. → ___
+
+---
+
+## Reporte honesto (50/50 — obligatorio al cerrar)
+
+> Las tres secciones son obligatorias: sin ellas (con contenido real, no el `___`), el cierre está
+> **incompleto**, no cerrado — **y el candado lo caza**. La cobertura de arriba dice *"revisé los ángulos"*;
+> esto dice *"y acá está lo que quedó flojo"*. La mitad honesta que la cobertura no cubre.
+>
+> Regla del 50/50: la mitad es entregar lo pedido; la otra mitad es señalar lo débil y lo que falta.
+> La ausencia de hallazgos **NO** es prueba de ausencia de bugs — decí dónde quedaste ciego.
+
+### Fortalezas
+___
+
+### Debilidades / qué quedó corto o frágil
+___
+
+### Qué NO se alcanzó a probar (lo más importante)
+___

@@ -47,7 +47,7 @@ function parseFicha(texto, archivo) {
     claves.set(clave, m[1].toLowerCase() === 'x');
     if (linea.includes('___')) notaFaltante.add(clave);
   }
-  return { archivo, cerrada, claves, notaFaltante };
+  return { archivo, cerrada, claves, notaFaltante, texto };
 }
 
 function problemasDeFicha(f) {
@@ -56,6 +56,33 @@ function problemasDeFicha(f) {
     if (!f.claves.has(clave)) out.push(`falta la clave (${clave})`);
     else if (f.claves.get(clave) === false) out.push(`(${clave}) quedó en [ ] pero el bloque se declaró cerrado`);
     else if (f.notaFaltante.has(clave)) out.push(`(${clave}) está marcada [x] pero su nota sigue vacía (el "___" sin llenar)`);
+  }
+  return out;
+}
+
+// Las 3 secciones del reporte honesto (50/50), obligatorias al CERRAR — el candado
+// que SKILL.md promete (L99): ninguna entrega/cierre está completo sin Fortalezas +
+// Debilidades + Qué NO se probó. Es la mitad honesta que la cobertura no cubre.
+const SECCIONES_HONESTIDAD = [
+  { nombre: 'Fortalezas', re: /(^|\n)\s*#{1,6}\s*Fortalezas/i },
+  { nombre: 'Debilidades', re: /(^|\n)\s*#{1,6}\s*Debilidades/i },
+  { nombre: 'Qué NO se probó', re: /(^|\n)\s*#{1,6}\s*Qu[eé]\s+NO\s+se\b/i },
+];
+
+/** Problemas del reporte honesto: sección ausente, o presente pero con su "___" sin llenar. */
+function problemasDeHonestidad(texto) {
+  const out = [];
+  const t = texto || '';
+  for (const s of SECCIONES_HONESTIDAD) {
+    const m = t.match(s.re);
+    if (!m) {
+      out.push(`falta la sección honesta "${s.nombre}" (Fortalezas / Debilidades / Qué NO se probó son obligatorias al cerrar)`);
+      continue;
+    }
+    const rest = t.slice(m.index + m[0].length);
+    const corte = rest.search(/\n\s*#{1,6}\s/); // hasta el próximo encabezado o EOF
+    const cuerpo = (corte === -1 ? rest : rest.slice(0, corte)).replace(/[_*\s>-]/g, '');
+    if (cuerpo.length === 0) out.push(`la sección honesta "${s.nombre}" está vacía (reemplazá el "___")`);
   }
   return out;
 }
@@ -86,10 +113,11 @@ function revisarCobertura(dir) {
   const problemas = [];
   for (const f of cerradas) {
     for (const p of problemasDeFicha(f)) problemas.push(`${f.archivo}: ${p}`);
+    for (const p of problemasDeHonestidad(f.texto)) problemas.push(`${f.archivo}: ${p}`);
   }
   return { esMetodo: true, fichas, cerradas, problemas };
 }
 
 module.exports = {
-  CLAVES_CANONICAS, isMethodProject, parseFicha, problemasDeFicha, leerFichas, revisarCobertura,
+  CLAVES_CANONICAS, isMethodProject, parseFicha, problemasDeFicha, problemasDeHonestidad, leerFichas, revisarCobertura,
 };
