@@ -1,0 +1,15 @@
+{
+  "name": "the-raw-method-candados",
+  "version": "1.0.0",
+  "private": true,
+  "description": "El arnes de candados de The Raw Method — verificable por su cuenta, sin atarse a ningun proyecto.",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vitest": "^2.0.0",
+    "@types/node": "^20.0.0"
+  }
+}

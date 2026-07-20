@@ -1,0 +1,68 @@
+#!/bin/sh
+#
+# pre-commit.sample — el hook de git que corre los candados en cada commit
+# ========================================================================
+#
+# Parte de The Raw Method. Este archivo es el que convierte los candados de
+# "algo que hay que acordarse de correr" en "algo que corre solo, siempre".
+#
+# QUÉ ES ESTO (para el dueño no-ingeniero)
+# ----------------------------------------
+# Git —el programa que guarda las versiones del proyecto— permite poner un
+# "portero" que se ejecuta ANTES de cada guardado (cada `commit`). Este archivo
+# es ese portero. Antes de dejar entrar un cambio, corre los candados. Si un
+# candado falla, el portero NO ABRE LA PUERTA: el commit se cancela y el cambio
+# no se guarda hasta que arregles lo que rompió.
+#
+# Ese es el momento exacto en que el método deja de depender de tu memoria: no
+# tienes que acordarte de revisar nada, el portero lo hace por ti, cada vez, sin
+# excepción, aunque sean las 3 de la mañana de un viernes.
+#
+# CÓMO ACTIVARLO (una sola vez)
+# -----------------------------
+# Elige UNA de las dos opciones.
+#
+#   OPCIÓN A — a mano (sin instalar nada):
+#     1. Copia este archivo a la carpeta oculta de hooks de git de tu proyecto:
+#            cp candados/pre-commit.sample .git/hooks/pre-commit
+#     2. Dale permiso de ejecución (en Mac/Linux/Git-Bash):
+#            chmod +x .git/hooks/pre-commit
+#     3. Listo. Desde el próximo `git commit`, los candados corren solos.
+#
+#   OPCIÓN B — con husky (recomendado si el equipo comparte el repo):
+#     husky mete los hooks DENTRO del repo, así todos los que clonan el proyecto
+#     los reciben (con la opción A, cada persona tiene que copiarlos a mano).
+#     1. npm install -D husky
+#     2. npx husky init
+#     3. Pega la línea de "LO QUE CORRE" (de abajo) dentro de .husky/pre-commit
+#
+# NOTA: la Opción A vive solo en tu máquina (la carpeta .git no se comparte). Para
+# un proyecto en equipo, la Opción B es la que garantiza que TODOS tengan el portero.
+#
+# ---------------------------------------------------------------------------
+# LO QUE CORRE
+# ---------------------------------------------------------------------------
+
+echo "The Raw Method · corriendo los candados antes de guardar..."
+
+# Corre SOLO los candados de conformidad (rápido, para no demorar cada commit).
+# Con vitest en el stack de referencia:
+npx vitest run candados/conformance.test.ts
+RESULTADO=$?
+
+# Si además tienes candados propios en otros archivos, agrega acá sus corridas,
+# o corre toda la suite de candados de una:
+#     npx vitest run candados/
+# (más lento pero más completo — elige según cuánto tarde tu suite).
+
+if [ $RESULTADO -ne 0 ]; then
+  echo ""
+  echo "  ✗ Un candado falló. El commit se canceló."
+  echo "    Arregla lo que reportó el candado de arriba y vuelve a intentar."
+  echo "    (Esto NO es un castigo: es el portero atajando un error donde todavía es gratis.)"
+  echo ""
+  exit 1   # exit distinto de 0 = git cancela el commit
+fi
+
+echo "  ✓ Candados en verde. Guardando."
+exit 0     # exit 0 = git deja pasar el commit

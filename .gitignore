@@ -1,0 +1,4 @@
+node_modules/
+candados/node_modules/
+.DS_Store
+*.log

@@ -1,0 +1,15 @@
+{
+  "//": "tsconfig del arnés de The Raw Method. Sirve para UN fin: que el kit se pueda verificar solo, sin pedirle prestado el toolchain a ningún proyecto. Al copiar candados/ a TU proyecto, usa el tsconfig de tu proyecto — este es para el kit en sí.",
+  "compilerOptions": {
+    "strict": true,
+    "target": "es2022",
+    "lib": ["es2022"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": ["**/*.ts"]
+}
