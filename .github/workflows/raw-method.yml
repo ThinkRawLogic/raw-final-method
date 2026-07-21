@@ -22,3 +22,7 @@ jobs:
         run: node gobernanza/raw-check.js
       - name: self-test de la gobernanza (los candados se prueban a sí mismos)
         run: node gobernanza/test-gobernanza.js
+      - name: raw-secrets (candado de secretos)
+        run: node gobernanza/raw-secrets.js .
+      - name: raw-deps (lockfiles, advisory)
+        run: node gobernanza/raw-deps.js .

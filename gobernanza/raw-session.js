@@ -24,6 +24,13 @@ const REFLEJO = `
 ━━━ THE RAW METHOD — ACTIVO EN ESTE PROYECTO ━━━
 Estás operando bajo The Raw Method. Esto NO es opcional, y un bloque NO se declara cerrado solo.
 
+ANTES DE ESCRIBIR (la escalera — pará en el primer peldaño que sirva):
+  1. ¿Esto necesita existir? Necesidad especulativa = no lo hagas (YAGNI).
+  2. ¿Ya existe en el código? Reusá el primitivo/helper antes de reinventar.
+  3. ¿Lo resuelve el stdlib, una feature nativa, o una dep ya instalada? Usalo.
+  4. ¿Se puede en una línea? Una línea. Recién ahí, el mínimo que funciona.
+El rigor es proporcional al downside (el DIAL): bloque chico = ceremonia chica; dinero/seguridad = a fondo (flota).
+
 La unidad de trabajo es el BLOQUE (un objetivo claro). Cerrar un bloque dispara la ceremonia,
 solo sobre los pilares que el router prendió:
   1. AUDITAR con los tres equipos:

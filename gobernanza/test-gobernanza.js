@@ -16,6 +16,9 @@ const HERE = __dirname;
 const GATE = path.join(HERE, 'raw-gate.js');
 const SESSION = path.join(HERE, 'raw-session.js');
 const CHECK = path.join(HERE, 'raw-check.js');
+const SECRETS = path.join(HERE, 'raw-secrets.js');
+const DEPS = path.join(HERE, 'raw-deps.js');
+const DEUDA = path.join(HERE, 'raw-deuda.js');
 
 let fallos = 0;
 function check(nombre, cond) {
@@ -154,6 +157,21 @@ const con = (sufijo, ficha) => { const d = tmpProyecto(sufijo); marcarMetodo(d);
 // R6: fichas con marcador de lista `*` (Markdown válido) → se parsean las claves
 { const l = CLAVES.map((c) => `* [x] **(${c})** algo. → hecho`); const d = con('star', base(true, l) + HONESTO);
   check('R6 gate: claves con marcador `*` → PERMITIDO (parseadas OK)', correrGate('git commit -m x', d).code === 0); }
+
+// ============== Herramientas de pilar (secrets / deps / deuda) ===============
+function correr(script, dir) { const r = spawnSync('node', [script, dir], { encoding: 'utf8' }); return { code: r.status, out: (r.stdout || '') + (r.stderr || '') }; }
+
+{ const d = tmpProyecto('sec-clean'); fs.writeFileSync(path.join(d, 'app.js'), 'const x = 1;\n');
+  check('secrets: repo limpio → OK (exit 0)', correr(SECRETS, d).code === 0); }
+{ const d = tmpProyecto('sec-leak'); fs.writeFileSync(path.join(d, 'app.js'), 'const k = "' + ('AKIA' + '1234567890ABCDEF') + '";\n');
+  const r = correr(SECRETS, d);
+  check('secrets: AWS key filtrada → BLOQUEA (exit 1)', r.code === 1); check('secrets:   · nombra el hallazgo', /AWS/.test(r.out)); }
+{ const d = tmpProyecto('sec-ph'); fs.writeFileSync(path.join(d, 'app.js'), 'const api_key = "your_placeholder_value_here";\n');
+  check('secrets: placeholder (your_...) → OK (allowlist, no falso positivo)', correr(SECRETS, d).code === 0); }
+{ const d = tmpProyecto('deps'); fs.writeFileSync(path.join(d, 'package.json'), '{}');
+  const r = correr(DEPS, d); check('deps: package.json sin lockfile → lo reporta (exit 0, advisory)', r.code === 0 && /package\.json/.test(r.out)); }
+{ const d = tmpProyecto('deuda'); fs.writeFileSync(path.join(d, 'x.js'), '// raw-deuda: cablear el candado de X antes de prod\n');
+  const r = correr(DEUDA, d); check('deuda: cosecha el marcador raw-deuda: (exit 0)', r.code === 0 && /cablear el candado/.test(r.out)); }
 
 process.stdout.write(`\n${fallos === 0 ? '✅ TODO EN VERDE' : `❌ ${fallos} fallo(s)`}\n`);
 process.exit(fallos === 0 ? 0 : 1);
