@@ -32,10 +32,25 @@ declara los que quedaron fuera.*
 *Agrupados por clase de problema, no en lista suelta. Un problema de fondo con cinco síntomas es UN hallazgo
 con cinco síntomas, no cinco hallazgos. Cada uno ya pasó por las 3 lentes.*
 
-### Cluster A — [clase de problema]
+### RM-001 · Cluster A — [clase de problema]
 - **Síntoma(s):**
 - **Confirmación (las 3 lentes):** ¿existe la defensa? / ¿hay un test que lo cubra? / ¿puede pasar de verdad? → **2 de 3 no lo refutan** ⇒ real.
 - **Regla que nace (motor §):** *(el principio que mata la clase entera + su candado 🤖, no solo el parche)*
+
+## 2b. Risk Score (reproducible)
+
+Vara simple y repetible = **peso por severidad**, sumado sobre hallazgos confirmados:
+**crítico ×10 · alto ×5 · medio ×2 · bajo ×1**. No es ciencia — es un número consistente entre auditorías,
+para ver si el bloque mejora o empeora. Cada hallazgo lleva su **ID estable (RM-00N)**: si `RM-003` reaparece
+en la próxima auditoría, el parche no mató la clase — faltó el candado.
+
+| Severidad | # confirmados | ×peso | subtotal |
+|---|---|---|---|
+| crítico | | 10 | |
+| alto | | 5 | |
+| medio | | 2 | |
+| bajo | | 1 | |
+| **Risk Score** | | | |
 
 ## 3. QUÉ NO SE ALCANZÓ A PROBAR (lo más importante)
 

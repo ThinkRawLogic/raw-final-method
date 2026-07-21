@@ -173,6 +173,23 @@ Regla dura: **lo que toca dinero lo cierra el modelo más capaz**, nunca uno má
 
 ---
 
+## El dial: cuánta ceremonia (proporcional al downside)
+
+El rigor no es fijo — es una **perilla** que girás según lo que está en juego. No es un juicio que la IA
+adivina cada vez: lo decidís vos, por bloque.
+
+| Posición | Cuándo | Qué corre |
+|---|---|---|
+| **liviano** | pantalla interna, cambio de una línea, nada irreversible | ficha + una pasada de auditoría (agente fresco) |
+| **normal** *(default)* | el día a día | los 3 equipos sobre los pilares que prende el router |
+| **a fondo** | toca dinero, seguridad, o algo irreversible | la **flota adversaria** (varios agentes, solo lectura, loop-hasta-secar) + el modelo más capaz |
+
+Regla dura: **dinero y seguridad no bajan de "a fondo"** por tu cuenta. La escalera de construcción
+(YAGNI → reusar → stdlib → una línea) corre SIEMPRE, en cualquier posición: menos ceremonia de auditoría
+NO es permiso para sobre-construir.
+
+---
+
 ## Definición de Hecho (cuándo algo está TERMINADO)
 
 "Terminado" es la pregunta más ambigua y la que más plata cuesta si se responde flojo. Algo está hecho cuando:
@@ -219,8 +236,10 @@ Cada pilar tiene un nombre en llano + su término técnico, y trae *qué chequea
 - `referencias/modelos-ia.md` — qué modelo para qué tarea, con analogías.
 - `referencias/documentos-vivos.md` — el ecosistema de documentos y para qué sirve cada uno.
 - `referencias/candados-y-capas.md` — las 3 capas de enforcement y cómo se construye un candado.
+- `referencias/fichas-de-ataque.md` — patrones grep-ready por clase de bug (regex + Vulnerable + Seguro), para que la auditoría sea determinista, no solo juicio.
 - `plantillas/` — plantillas VACÍAS para arrancar un proyecto nuevo (la ley, la ficha de cobertura, el arranque de sesión, la bitácora, el backlog y las decisiones autónomas). Un proyecto nuevo empieza vacío y las llena solo, a medida que aprende (el motor: de cada problema, una regla — ver `referencias/candados-y-capas.md`).
 - `comandos/cerrar-bloque.md` — el ritual de cierre paso a paso (las 3 auditorías → ficha resuelta → documentos al día → reporte honesto → OK del dueño). Sirve como slash-command o como checklist.
+- `comandos/auditar.md` — el Red Team **solo lectura** (allowed-tools sin Write/Edit): la flota no puede modificar lo que audita. Invariante técnico, no promesa.
 - `candados/` — el arnés reusable que corre en el `git commit`: `conformance.test.ts` (candados genéricos), `candado-plantilla.ts` (el molde) y `pre-commit.sample` (el hook de git).
 - `gobernanza/` — el candado del PROCESO (Nivel 1): hooks a nivel del harness que hacen que seguir el método deje de ser opcional para la IA. `raw-session.js` inyecta el reflejo en cada sesión; `raw-gate.js` rechaza `git commit` si una ficha cerrada quedó sin resolver (no lo evade `--no-verify`). Ver `gobernanza/README.md`.
 

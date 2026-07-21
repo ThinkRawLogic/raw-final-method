@@ -4,6 +4,24 @@ Esta es la pata de **verificar** del método. Aquí se explica **cómo se corre*
 
 ---
 
+## 0. RED FLAGS — las excusas para dejar de auditar (leelas ANTES de decir "todo bien")
+
+El peor enemigo de una auditoría es el auditor convenciéndose de que ya está. Estas frases, si te las
+escuchás pensando, son señal de que **NO atacaste de verdad** — no de que el código esté bien:
+
+| La excusa (bandera roja) | Lo que hay que hacer |
+|---|---|
+| "Ya encontré varios, con eso alcanza" | Seguí. El que te saltás puede ser el crítico. Corré TODOS los ángulos del router |
+| "Se ve prolijo, seguro está bien" | La prolijidad no es calidad — la de una IA engaña más. Revisalo MÁS, no menos |
+| "Esto seguro ya está cubierto" | No asumas: verificalo (¿hay guard? ¿hay test? ¿es alcanzable? — las 3 lentes) |
+| "El bloque es chico, no hace falta tanto" | El tamaño no manda; el downside sí. Chico y toca plata = a fondo igual |
+| "No encontré nada" | Cero hallazgos casi siempre = no atacaste, no que sea perfecto. Escarbá otra clase, o declará dónde quedaste ciego (§7) |
+
+Convierte la regla de oro ("cero hallazgos = no atacaste") de un cartel 📖 en un checklist que se recorre.
+Para los patrones concretos a buscar, ver `referencias/fichas-de-ataque.md`.
+
+---
+
 ## 1. La postura: atacar, no felicitar
 
 Auditar **no es buscar lo que se hizo bien**. Es lo contrario. Tú entras asumiendo que **algo está mal o se diseñó mal**, y tu trabajo es **encontrarlo antes de que lo encuentre un usuario o un atacante**.
