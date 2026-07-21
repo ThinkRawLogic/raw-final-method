@@ -20,3 +20,5 @@ jobs:
           node-version: '20'
       - name: raw-check (candado de cobertura)
         run: node gobernanza/raw-check.js
+      - name: self-test de la gobernanza (los candados se prueban a sí mismos)
+        run: node gobernanza/test-gobernanza.js
