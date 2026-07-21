@@ -13,18 +13,12 @@
 
 'use strict';
 const fs = require('fs');
-const path = require('path');
 
-function isMethodProject(dir) {
-  const marcadores = [
-    path.join(dir, '.the-raw-method'),
-    path.join(dir, 'docs', '_cobertura'),
-    path.join(dir, '_cobertura'),
-    path.join(dir, 'candados', 'conformance.test.ts'),
-    path.join(dir, 'INVARIABLES.md'),
-  ];
-  return marcadores.some((p) => { try { return fs.existsSync(p); } catch (_) { return false; } });
-}
+// Mismo criterio que el gate (con walk-up por los padres), reusando el módulo compartido.
+// Fallback defensivo: si el módulo no cargara, nunca rompemos el arranque de sesión.
+let isMethodProject;
+try { ({ isMethodProject } = require('./raw-cobertura')); }
+catch (_) { isMethodProject = () => false; }
 
 const REFLEJO = `
 ━━━ THE RAW METHOD — ACTIVO EN ESTE PROYECTO ━━━

@@ -47,8 +47,12 @@ function main() {
   const command = (data.tool_input && data.tool_input.command) || '';
   const dir = data.cwd || process.env.CLAUDE_PROJECT_DIR || process.cwd();
 
-  // Solo nos importan los commits (regex barato antes de tocar disco).
-  if (!/\bgit\s+commit\b/.test(command)) return allow();
+  // Solo nos importan los comandos que PERSISTEN un commit. Tolera opciones globales de git
+  // entre `git` y el subcomando (-c k=v, -C dir, --no-pager, ...) y cubre merge/revert/cherry-pick/am.
+  // ponytail: el hook es best-effort local (no conoce aliases como `git ci`); el backstop real de
+  // los casos exóticos es raw-check en CI, que corre sobre el estado ya guardado sin importar el comando.
+  const ES_COMMIT = /\bgit\s+(?:-c\s+\S+\s+|-C\s+\S+\s+|--?[\w-]+(?:=\S+)?\s+)*(commit|merge|revert|cherry-pick|am)\b/i;
+  if (!ES_COMMIT.test(command)) return allow();
 
   const { esMetodo, cerradas, problemas } = revisarCobertura(dir);
   if (!esMetodo) return allow(); // fuera de un proyecto Raw Method, no nos metemos

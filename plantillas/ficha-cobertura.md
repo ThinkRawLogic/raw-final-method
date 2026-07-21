@@ -15,10 +15,13 @@
 
 **Construyó:** ___________  **Auditó (agente fresco / distinto del que construyó):** ___________
 
+**Rastro de auditoría (opcional, recomendado):** ___________  *(reporte del agente auditor, PR, o "flota: N rondas hasta secar")*
+
 > **Por qué separadas:** el auditor **tiene que ser otro** — no el mismo que construyó. Refutar por defecto
 > necesita ojos frescos: quien escribió el código arrastra los mismos supuestos con los que lo escribió, así
 > que si se audita a sí mismo mira desde el mismo ángulo y se auto-aprueba. Si es una sola persona dirigiendo,
 > igual: el pase de auditoría lo corre un **agente distinto** del que construyó, sin arrastrar su contexto.
+> 🤖 **El candado lo exige:** "Auditó" debe estar lleno y ser **distinto** de "Construyó" — auto-auditarse no cierra el bloque. Si declarás un "Rastro de auditoría" que sea un archivo, tiene que existir.
 
 ---
 

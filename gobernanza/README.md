@@ -42,20 +42,27 @@ Require status checks to pass.)
 
 ---
 
-## Nivel 3 — la honestidad, no solo la cobertura (candado 50/50)
+## Nivel 3 — la sustancia: honestidad y auditor independiente
 
-La cobertura verifica que se **revisaron** los ángulos. Pero `SKILL.md` (L99) promete además un candado
-para la **honestidad 50/50**: ningún cierre está completo sin su renglón **Fortalezas · Debilidades ·
-Qué NO se alcanzó a probar**. Ese candado no existía — ahora sí.
+La cobertura verifica que se **revisaron** los ángulos. El Nivel 3 va por lo que la cobertura no ve.
 
-La ficha (`plantillas/ficha-cobertura.md`) trae un **Reporte honesto** obligatorio con esas tres
-secciones. `raw-gate` y `raw-check` rechazan el cierre de una ficha si el reporte **falta** o si sus
-secciones quedaron **vacías** (el `___` sin llenar). Cierra la deuda que el propio método declaraba
-como candado pero no tenía.
+**3.1 — Honestidad 50/50.** `SKILL.md` (L99) prometía un candado para el renglón **Fortalezas ·
+Debilidades · Qué NO se alcanzó a probar** que no existía. Ahora la ficha lo trae obligatorio y
+`raw-gate`/`raw-check` rechazan el cierre si falta o si las secciones quedaron vacías / de relleno.
 
-> Sigue siendo **forma reforzada**, no sustancia total: exigimos que la debilidad esté *escrita*, no
-> podemos verificar que sea *la* debilidad real. Registrar la corrida de un auditor independiente (que
-> el `(auditoría)` deje de ser autodeclarado) es el próximo paso.
+**3.2 — Independencia del auditor.** El `(auditoría)` ya no lo firma el que construyó: la ficha exige
+los campos **Construyó** y **Auditó** llenos y **distintos** (auto-auditarse no cierra el bloque), y si
+declarás un **Rastro de auditoría** que sea un archivo, tiene que existir y no estar vacío.
+
+> **Endurecido por un red-team adversario** del propio candado (le aplicamos la disciplina del método):
+> se cazaron y corrigieron 15 bypasses / falsos-positivos — notas borradas que pasaban, secciones honestas
+> con encabezado-con-sufijo que no se enforzaban, independencia burlada con un punto, `git -c … commit`
+> que esquivaba el hook, y rotura retroactiva (ahora las fichas *legacy* sin campos v2 se grandfatherean).
+>
+> Techo honesto (§5): sigue siendo **forma reforzada**, no sustancia total. Exigimos que la debilidad esté
+> *escrita* y que el auditor sea *nominalmente distinto* — no podemos probar que sea *la* debilidad real ni
+> que el auditor sea *de verdad* independiente. La señal fuerte (que el harness escriba quién auditó) es
+> out-of-band; ese es el piso irreducible del método.
 
 ---
 
